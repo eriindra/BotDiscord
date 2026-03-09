@@ -15,7 +15,9 @@ SOURCE_CHANNELS = [
     1316337341832495144,
 ]
 
-client = discord.Client()
+intents = discord.Intents.default()
+intents.message_content = True
+client = discord.Client(intents=intents)
 last_message_ids = {ch_id: None for ch_id in SOURCE_CHANNELS}
 
 @client.event
@@ -95,5 +97,6 @@ async def check_updates():
 
                     await session.post(WEBHOOK_URL, json=payload)
                     print(f"✅ Update dipost dari #{source_channel.name} | Attachments: {len(message.attachments)}")
+
 
 client.run(SELF_TOKEN)
