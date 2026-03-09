@@ -15,9 +15,7 @@ SOURCE_CHANNELS = [
     1316337341832495144,
 ]
 
-intents = discord.Intents.default()
-intents.message_content = True
-client = discord.Client(intents=intents)
+client = discord.Client()
 last_message_ids = {ch_id: None for ch_id in SOURCE_CHANNELS}
 
 @client.event
@@ -56,7 +54,6 @@ async def check_updates():
                         "timestamp": message.created_at.isoformat()
                     }
 
-                    # Jika ada attachment (foto/gif/video), set gambar pertama di embed
                     image_extensions = (".png", ".jpg", ".jpeg", ".gif", ".webp")
                     video_extensions = (".mp4", ".mov", ".webm", ".mkv")
                     
@@ -67,9 +64,8 @@ async def check_updates():
                         url = attachment.url
                         if any(url.lower().endswith(ext) for ext in image_extensions):
                             if not image_url:
-                                image_url = url  # Foto pertama masuk ke embed image
+                                image_url = url
                             else:
-                                # Foto tambahan → tambah sebagai field
                                 embed.setdefault("fields", []).append({
                                     "name": "🖼️ Extra Image",
                                     "value": url,
@@ -81,7 +77,6 @@ async def check_updates():
                     if image_url:
                         embed["image"] = {"url": image_url}
 
-                    # Video tidak bisa embed langsung → kirim sebagai teks terpisah
                     if video_links:
                         embed.setdefault("fields", []).append({
                             "name": "🎬 Video",
@@ -97,6 +92,5 @@ async def check_updates():
 
                     await session.post(WEBHOOK_URL, json=payload)
                     print(f"✅ Update dipost dari #{source_channel.name} | Attachments: {len(message.attachments)}")
-
 
 client.run(SELF_TOKEN)
